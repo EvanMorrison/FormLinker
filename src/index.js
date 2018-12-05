@@ -3,6 +3,7 @@ const isEqual = require("lodash/isEqual");
 const isEmpty = require("lodash/isEmpty");
 const isNil = require("lodash/isNil");
 const set = require("lodash/set");
+const unset = require("lodash/unset");
 
 module.exports = class{
   constructor(options = {}) {
@@ -62,7 +63,19 @@ module.exports = class{
   // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback.
   setError(fieldName, errors, triggerCallback = true) {
     if(isEmpty(errors)) {
-      delete this.errors[fieldName];
+      unset(this.errors, fieldName);
+      let nested = fieldName.indexOf(".") > -1;
+      if(nested) {
+        let currentPath = fieldName.slice(0, fieldName.lastIndexOf("."));
+        while(currentPath) {
+          if(isEmpty(get(this.errors, currentPath))) {
+            unset(this.errors, currentPath);
+            currentPath = currentPath.slice(0, currentPath.lastIndexOf("."));
+          } else {
+            break;
+          }
+        }
+      }
     } else {
       set(this.errors, fieldName, errors);
     }

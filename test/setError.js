@@ -21,7 +21,12 @@ test("set empty error", t => {
       foo: "bar"
     },
     schema: {
-      foo: "string"
+      foo: "string",
+      bar: {
+        baz: {
+          qux: "string"
+        }
+      }
     }
   });
 
@@ -29,4 +34,9 @@ test("set empty error", t => {
   t.deepEqual(fl.getError("foo"), ["new bar"]);
   fl.setError("foo", []);
   t.deepEqual(fl.getError("foo"), []);
+  fl.setError("bar.baz.qux", ["new bar"]);
+  t.deepEqual(fl.getError("bar.baz.qux"), ["new bar"]);
+  fl.setError("bar.baz.qux", []);
+  t.deepEqual(fl.getError("bar.baz.qux"), []);
+  t.deepEqual(fl.errors, {});
 });
