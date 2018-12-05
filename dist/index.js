@@ -13,6 +13,7 @@ var isEqual = require("lodash/isEqual");
 var isEmpty = require("lodash/isEmpty");
 var isNil = require("lodash/isNil");
 var set = require("lodash/set");
+var unset = require("lodash/unset");
 
 module.exports = function () {
   function _class() {
@@ -101,7 +102,19 @@ module.exports = function () {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       if (isEmpty(errors)) {
-        delete this.errors[fieldName];
+        unset(this.errors, fieldName);
+        var nested = fieldName.indexOf(".") > -1;
+        if (nested) {
+          var currentPath = fieldName.slice(0, fieldName.lastIndexOf("."));
+          while (currentPath) {
+            if (isEmpty(get(this.errors, currentPath))) {
+              unset(this.errors, currentPath);
+              currentPath = currentPath.slice(0, currentPath.lastIndexOf("."));
+            } else {
+              break;
+            }
+          }
+        }
       } else {
         set(this.errors, fieldName, errors);
       }
