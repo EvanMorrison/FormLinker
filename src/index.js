@@ -64,6 +64,18 @@ module.exports = class{
   setError(fieldName, errors, triggerCallback = true) {
     if(isEmpty(errors)) {
       unset(this.errors, fieldName);
+      let nested = fieldName.indexOf(".") > -1;
+      if(nested) {
+        let currentPath = fieldName.slice(0, fieldName.lastIndexOf("."));
+        while(currentPath) {
+          if(isEmpty(get(this.errors, currentPath))) {
+            unset(this.errors, currentPath);
+            currentPath = currentPath.slice(0, currentPath.lastIndexOf("."));
+          } else {
+            break;
+          }
+        }
+      }
     } else {
       set(this.errors, fieldName, errors);
     }
