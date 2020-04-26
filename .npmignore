@@ -1,9 +1,9 @@
 .babelrc
 .eslintrc.js
-.git
-.gitignore
-README.md
+.eslintignore
+.npmrc
+babel.config.json
 circle.yml
-index.js
 node_modules
 test
+src

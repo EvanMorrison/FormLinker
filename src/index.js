@@ -1,11 +1,6 @@
-const get = require("lodash/get");
-const isEqual = require("lodash/isEqual");
-const isEmpty = require("lodash/isEmpty");
-const isNil = require("lodash/isNil");
-const set = require("lodash/set");
-const unset = require("lodash/unset");
+import { get, isEqual, isEmpty, isNil, set, unset } from "lodash";
 
-module.exports = class{
+export default class{
   constructor(options = {}) {
     this.schema = options.schema || {};
     this.fields = this.calcFields();
