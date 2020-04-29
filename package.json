@@ -16,13 +16,28 @@
     "linker",
     "formlinker"
   ],
-  "main": "dist/index.js",
+  "main": "index.js",
+  "module": "dist/esm/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "commonjs",
+    "lib",
+    "umd",
+    "index.d.ts"
+  ],
   "scripts": {
     "lint": "eslint src",
-    "build": "babel src --out-dir dist",
+    "build": "npm-run-all --parallel build:*",
+    "prebuild:webpack": "rimraf dis/cjs dist/umd",
+    "build:webpack": "npm-run-all --parallel webpack:*",
+    "webpack:dev": "webpack --output-filename index.js --mode development",
+    "webpack:prod": "cross-env NODE_ENV=production webpack --output-filename index.min.js --mode production",
+    "prebuild:esm": "rimraf dist/esm",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --out-dir dist/esm",
     "test": "ava"
   },
   "dependencies": {
+    "core-js": "^3.6.5",
     "lodash": ">= 4"
   },
   "devDependencies": {
@@ -31,14 +46,21 @@
     "@babel/preset-env": "7.9.5",
     "@babel/register": "7.9.0",
     "ava": "0.25.0",
-    "core-js": "3.6.5",
+    "babel-loader": "8.1.0",
+    "babel-preset-minify": "0.5.1",
+    "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.1",
+    "eslint-loader": "4.0.2",
     "eslint-plugin-import": "2.20.2",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
-    "form-formatters": "1.0.3"
+    "form-formatters": "1.0.3",
+    "npm-run-all": "4.1.5",
+    "rimraf": "3.0.2",
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.11"
   },
   "ava": {
     "concurrency": 5,

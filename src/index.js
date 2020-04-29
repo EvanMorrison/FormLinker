@@ -59,7 +59,7 @@ export default class{
   setError(fieldName, errors, triggerCallback = true) {
     if(isEmpty(errors)) {
       unset(this.errors, fieldName);
-      let nested = fieldName.indexOf(".") > -1;
+      const nested = fieldName.indexOf(".") > -1;
       if(nested) {
         let currentPath = fieldName.slice(0, fieldName.lastIndexOf("."));
         while(currentPath) {
@@ -113,7 +113,7 @@ export default class{
   // setValues sets the field value to the masked value passed in. It also calls the changeCallback.
   setValues(values, triggerCallback = true) {
     this.fields.forEach((fieldName) => {
-      let value = get(values, fieldName);
+      const value = get(values, fieldName);
       if(typeof value !== "undefined") {
         this.setValue(fieldName, value, false);
       }
@@ -125,7 +125,7 @@ export default class{
 
   setValuesFromParsed(values) {
     this.fields.forEach((fieldName) => {
-      let value = get(values, fieldName);
+      const value = get(values, fieldName);
       if(typeof value !== "undefined") {
         set(this.data, fieldName, this.convert(fieldName, value));
       }
@@ -184,7 +184,7 @@ export default class{
   isValid() {
     let flag = true;
     for(let i = 0; i < this.fields.length; i++) {
-      const{valid} = this.format(this.fields[i], this.getValue(this.fields[i]));
+      const{ valid } = this.format(this.fields[i], this.getValue(this.fields[i]));
       if(valid === false) {
         flag = false;
         break;
@@ -194,7 +194,7 @@ export default class{
   }
 
   validate(fieldName, triggerCallback = true) {
-    const{errors, formatted, parsed} = this.format(fieldName, this.getValue(fieldName));
+    const{ errors, formatted, parsed } = this.format(fieldName, this.getValue(fieldName));
     this.setError(fieldName, errors, false);
     this.setValue(fieldName, formatted, false);
     set(this.parsedData, fieldName, parsed);
@@ -220,7 +220,7 @@ export default class{
 
   // extractDifferences returns an object of every key that has changed with the value it has changed to. This is great for sending only changes.
   extractDifferences(original) {
-    let differences = {};
+    const differences = {};
     const data = this.parsedData;
 
     this.fields.forEach((field) => {
