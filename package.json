@@ -1,6 +1,6 @@
 {
   "name": "form-linker",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": false,
   "description": "Links form elements to each other.",
   "author": "AlchemyAlcove",
@@ -20,7 +20,6 @@
   "scripts": {
     "lint": "eslint src",
     "build": "babel src --out-dir dist",
-    "security": "node_modules/nsp/bin/nsp check",
     "test": "ava"
   },
   "dependencies": {

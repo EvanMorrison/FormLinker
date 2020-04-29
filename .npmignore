@@ -3,6 +3,8 @@
 .eslintignore
 .npmrc
 babel.config.json
+.git
+.gitignore
 circle.yml
 node_modules
 test
