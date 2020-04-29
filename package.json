@@ -17,40 +17,56 @@
     "formlinker"
   ],
   "main": "index.js",
+  "module": "dist/esm/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
   "scripts": {
-    "lint": "eslint src",
-    "build": "babel src --out-dir dist",
+    "lint": "eslint src test",
+    "build": "npm-run-all --parallel build:*",
+    "prebuild:webpack": "rimraf dis/cjs dist/umd",
+    "build:webpack": "npm-run-all --parallel webpack:*",
+    "webpack:dev": "webpack --output-filename index.js --mode development",
+    "webpack:prod": "cross-env NODE_ENV=production webpack --output-filename index.min.js --mode production",
+    "prebuild:esm": "rimraf dist/esm",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --out-dir dist/esm",
     "test": "ava"
   },
   "dependencies": {
+    "core-js": "^3.6.5",
     "lodash": ">= 4"
   },
   "devDependencies": {
-    "ava": "0.25.0",
-    "babel-cli": "6.26.0",
-    "babel-eslint": "8.2.2",
-    "babel-plugin-array-includes": "2.0.3",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.26.0",
-    "babel-plugin-transform-object-assign": "6.22.0",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-preset-env": "1.6.1",
-    "babel-register": "6.26.0",
+    "@ava/babel": "1.0.1",
+    "@babel/cli": "7.8.4",
+    "@babel/core": "7.9.0",
+    "@babel/preset-env": "7.9.5",
+    "@babel/register": "7.9.0",
+    "ava": "3.8.1",
+    "babel-loader": "8.1.0",
+    "cross-env": "7.0.2",
+    "eslint": "6.8.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-loader": "4.0.2",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
     "form-formatters": "1.0.3",
-    "eslint": "4.18.2",
-    "eslint-config-standard": "11.0.0",
-    "eslint-plugin-import": "2.9.0",
-    "eslint-plugin-node": "6.0.1",
-    "eslint-plugin-promise": "3.7.0",
-    "eslint-plugin-standard": "3.0.1",
-    "nsp": "3.2.1"
+    "npm-run-all": "4.1.5",
+    "rimraf": "3.0.2",
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.11"
   },
   "ava": {
     "concurrency": 5,
     "failFast": true,
     "failWithoutAssertions": false,
     "require": [
-      "babel-register"
+      "@babel/register"
     ],
-    "babel": "inherit"
+    "babel": true
   }
 }

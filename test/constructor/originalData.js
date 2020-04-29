@@ -3,7 +3,7 @@ import test from "ava";
 import { NumberFormatter } from "form-formatters";
 
 test("schema no original data", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     schema: {
       foo: "string.required"
     }
@@ -13,7 +13,7 @@ test("schema no original data", t => {
 });
 
 test("schema simple original data", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: "bar"
     },
@@ -22,7 +22,7 @@ test("schema simple original data", t => {
     }
   });
 
-  t.deepEqual({foo: "bar"}, fl.originalData);
+  t.deepEqual({ foo: "bar" }, fl.originalData);
 });
 
 test("complex original data", t => {
@@ -47,7 +47,7 @@ test("complex original data", t => {
     number: NumberFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: data,
     formatters: formatters,
     schema: {

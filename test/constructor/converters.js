@@ -3,7 +3,7 @@ import test from "ava";
 import { DateConverter } from "form-formatters";
 
 test("date converter", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     converters: {
       date: DateConverter
     },
@@ -15,5 +15,5 @@ test("date converter", t => {
     }
   });
 
-  t.deepEqual({foo: "Jan 1, 2023"}, fl.data);
+  t.deepEqual({ foo: "Jan 1, 2023" }, fl.data);
 });

@@ -1,8 +1,0 @@
-.babelrc
-.eslintrc.js
-.git
-.gitignore
-circle.yml
-index.js
-node_modules
-test

@@ -1,0 +1,38 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": [
+            "defaults"
+          ]
+        },
+        "bugfixes": true,
+        "useBuiltIns": "entry",
+        "corejs": 3
+      }
+    ]
+  ],
+  "env": {
+    "esm": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "browsers": [
+                "last 2 years"
+              ]
+            },
+            "bugfixes": true,
+            "useBuiltIns": "entry",
+            "corejs": 3,
+            "modules": false
+          }
+        ]
+      ]
+    }
+  },
+  "comments": false
+}
