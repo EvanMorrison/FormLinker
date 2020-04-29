@@ -20,7 +20,6 @@
   "scripts": {
     "lint": "eslint src",
     "build": "babel src --out-dir dist",
-    "security": "node_modules/nsp/bin/nsp check",
     "test": "ava"
   },
   "dependencies": {
