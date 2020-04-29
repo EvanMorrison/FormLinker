@@ -2,7 +2,7 @@ import FormLinker from "../../src";
 import test from "ava";
 
 test("schema simple fields", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     schema: {
       foo: "string.required"
     }
@@ -12,7 +12,7 @@ test("schema simple fields", t => {
 });
 
 test("schema fields", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     schema: {
       foo: "number",
       bar: "number",

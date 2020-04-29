@@ -2,7 +2,7 @@ import test from "ava";
 import FormLinker from "../src";
 
 test("get value", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: "bar"
     },
@@ -16,7 +16,7 @@ test("get value", t => {
 });
 
 test("Deep Data", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: "Test"
@@ -34,7 +34,7 @@ test("Deep Data", t => {
 });
 
 test("Is a Boolean", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: true
@@ -52,7 +52,7 @@ test("Is a Boolean", t => {
 });
 
 test("Is a empty Array", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: []
@@ -70,7 +70,7 @@ test("Is a empty Array", t => {
 });
 
 test("Is a Number", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: 42
@@ -87,8 +87,8 @@ test("Is a Number", t => {
   t.true(fl.isValid());
 });
 
-test("Deep Data", t => {
-  let fl = new FormLinker({
+test("Deep Data 2", t => {
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: "Test"
@@ -106,7 +106,7 @@ test("Deep Data", t => {
 });
 
 test("Deep data boolean", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: true
@@ -124,7 +124,7 @@ test("Deep data boolean", t => {
 });
 
 test("Deep data empty Array", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: []
@@ -142,7 +142,7 @@ test("Deep data empty Array", t => {
 });
 
 test("Deep data number", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: 42
@@ -160,7 +160,7 @@ test("Deep data number", t => {
 });
 
 test("Invalid deep data number", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: null

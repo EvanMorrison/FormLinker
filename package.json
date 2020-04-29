@@ -26,7 +26,7 @@
     "index.d.ts"
   ],
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint src test",
     "build": "npm-run-all --parallel build:*",
     "prebuild:webpack": "rimraf dis/cjs dist/umd",
     "build:webpack": "npm-run-all --parallel webpack:*",
@@ -41,13 +41,13 @@
     "lodash": ">= 4"
   },
   "devDependencies": {
+    "@ava/babel": "1.0.1",
     "@babel/cli": "7.8.4",
     "@babel/core": "7.9.0",
     "@babel/preset-env": "7.9.5",
     "@babel/register": "7.9.0",
-    "ava": "0.25.0",
+    "ava": "3.8.1",
     "babel-loader": "8.1.0",
-    "babel-preset-minify": "0.5.1",
     "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.1",
@@ -67,8 +67,8 @@
     "failFast": true,
     "failWithoutAssertions": false,
     "require": [
-      "babel-register"
+      "@babel/register"
     ],
-    "babel": "inherit"
+    "babel": true
   }
 }

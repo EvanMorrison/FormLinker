@@ -3,7 +3,7 @@ import FormLinker from "../src";
 import { CreditCardFormatter, DateFormatter, NumberFormatter, RequiredFormatter, WholeFormatter } from "form-formatters";
 
 test("validate", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: null
     },
@@ -19,11 +19,11 @@ test("validate", t => {
 
 test("multiple formatters valid", t => {
   const formatters = {
-    "cc": CreditCardFormatter,
-    "required": RequiredFormatter
+    cc: CreditCardFormatter,
+    required: RequiredFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       cc: "1234-1234-1234-1234"
     },
@@ -39,11 +39,11 @@ test("multiple formatters valid", t => {
 
 test("multiple formatters date valid", t => {
   const formatters = {
-    "date": DateFormatter,
-    "required": RequiredFormatter
+    date: DateFormatter,
+    required: RequiredFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       date: "10 10 2010"
     },
@@ -60,12 +60,12 @@ test("multiple formatters date valid", t => {
 
 test("multiple formatters num.whole valid", t => {
   const formatters = {
-    "num": NumberFormatter,
-    "required": RequiredFormatter,
-    "whole": WholeFormatter
+    num: NumberFormatter,
+    required: RequiredFormatter,
+    whole: WholeFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       whole: "23"
     },
@@ -82,11 +82,11 @@ test("multiple formatters num.whole valid", t => {
 
 test("multiple formatters invalid", t => {
   const formatters = {
-    "cc": CreditCardFormatter,
-    "required": RequiredFormatter
+    cc: CreditCardFormatter,
+    required: RequiredFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       cc: "1234"
     },
@@ -119,11 +119,11 @@ test("complex validate", t => {
   };
 
   const formatters = {
-    "number": NumberFormatter,
-    "required": RequiredFormatter
+    number: NumberFormatter,
+    required: RequiredFormatter
   };
 
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: data,
     formatters: formatters,
     schema: {
