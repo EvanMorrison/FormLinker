@@ -2,11 +2,11 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("lodash"));
 	else if(typeof define === 'function' && define.amd)
-		define(["lodash"], factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["form-linker"] = factory(require("lodash"));
 	else
-		root["form-linker"] = factory(root["lodash"]);
+		root["form-linker"] = factory(root["_"]);
 })(window, function(__WEBPACK_EXTERNAL_MODULE_lodash__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -394,9 +394,9 @@ var _default = function () {
 /***/ }),
 
 /***/ "lodash":
-/*!*************************!*\
-  !*** external "lodash" ***!
-  \*************************/
+/*!**********************************************************************!*\
+  !*** external {"commonjs":"lodash","commonjs2":"lodash","root":"_"} ***!
+  \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
