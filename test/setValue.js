@@ -2,7 +2,7 @@ import test from "ava";
 import FormLinker from "../src";
 
 test("set value", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: "bar"
     },
@@ -14,12 +14,12 @@ test("set value", t => {
   t.deepEqual(fl.getValue("foo"), "bar");
   fl.setValue("foo", "new bar");
   t.deepEqual(fl.getValue("foo"), "new bar");
-  t.deepEqual(fl.parsedData["foo"], "new bar");
+  t.deepEqual(fl.parsedData.foo, "new bar");
   t.true(fl.isValid());
 });
 
 test("set nested value", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: "cake"
@@ -35,12 +35,12 @@ test("set nested value", t => {
   t.deepEqual(fl.getValue("foo.bar"), "cake");
   fl.setValue("foo.bar", "test");
   t.deepEqual(fl.getValue("foo.bar"), "test");
-  t.deepEqual(fl.parsedData["foo"]["bar"], "test");
+  t.deepEqual(fl.parsedData.foo.bar, "test");
   t.true(fl.isValid());
 });
 
 test("set nested value to null", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: {
         bar: "cake"
@@ -59,8 +59,8 @@ test("set nested value to null", t => {
   t.true(fl.isValid());
 });
 
-test("set nested value to null", t => {
-  let fl = new FormLinker({
+test("set nested value to null 2", t => {
+  const fl = new FormLinker({
     data: {
       foo: 42,
       bar: 15,
@@ -89,7 +89,7 @@ test("set nested value to null", t => {
 
   t.deepEqual(fl.getValue("foo"), 42);
   t.deepEqual(fl.getValue("bar"), 15);
-  t.deepEqual(fl.parsedData["bar"], 15);
+  t.deepEqual(fl.parsedData.bar, 15);
   t.deepEqual(fl.getValue("girl.happy"), false);
   t.deepEqual(fl.getValue("girl.sad"), true);
   t.deepEqual(fl.getValue("boy.happy"), false);

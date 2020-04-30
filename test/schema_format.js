@@ -2,7 +2,7 @@ import FormLinker from "../src";
 import test from "ava";
 
 test("schema string format", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     schema: {
       foo: "string"
     }

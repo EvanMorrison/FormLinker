@@ -2,7 +2,7 @@ import test from "ava";
 import FormLinker from "../src";
 
 test("get default error", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: null
     },
@@ -18,7 +18,7 @@ test("get default error", t => {
 });
 
 test("get error", t => {
-  let fl = new FormLinker({
+  const fl = new FormLinker({
     data: {
       foo: null
     },

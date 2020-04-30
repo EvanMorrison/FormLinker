@@ -1,2 +1,5 @@
 dist
+lib
+cjs
+umd
 node_modules
