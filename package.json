@@ -18,8 +18,14 @@
   ],
   "main": "index.js",
   "scripts": {
-    "lint": "eslint src",
-    "build": "babel src --out-dir dist",
+    "lint": "eslint src test",
+    "build": "npm-run-all --parallel build:*",
+    "prebuild:webpack": "rimraf dist/cjs dist/umd",
+    "build:webpack": "npm-run-all --parallel webpack:*",
+    "webpack:dev": "webpack --output-filename index.js --mode development",
+    "webpack:prod": "cross-env NODE_ENV=production webpack --output-filename index.min.js --mode production",
+    "prebuild:esm": "rimraf dist/esm",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --out-dir dist/esm",
     "test": "ava"
   },
   "dependencies": {
