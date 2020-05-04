@@ -245,6 +245,11 @@ export default class{
   /*
    * REFS
    */
+  // returns the ref for an associated input
+  getRef(fieldName) {
+    return(get(this.refs, fieldName + ".inputRef.current"));
+  }
+
   // provide a forceUpdate and/or ref to the associated input
   setRef(fieldName, ref) {
     if(isNil(ref)) {
