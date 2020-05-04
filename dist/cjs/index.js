@@ -402,35 +402,52 @@ var _default = function () {
     key: "focusOnField",
     value: function focusOnField(fieldName) {
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
-        var _iterator = _createForOfIteratorHelper(this.fields),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var field = _step.value;
-
-            if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.errors, field)) {
-              fieldName = field;
-              break;
-            }
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-
-        if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
-          fieldName = this.fields[0];
-        }
+        fieldName = this.fields[0];
       }
 
       var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
 
       if (ref && typeof ref.focus === "function") {
-        var error = this.getError(fieldName);
         ref.focus();
-        this.setError(fieldName, error);
+      }
+    }
+  }, {
+    key: "scrollToError",
+    value: function scrollToError() {
+      this.validateAll(false);
+      var fieldName, error;
+
+      var _iterator = _createForOfIteratorHelper(this.fields),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var field = _step.value;
+          error = this.getError(field);
+
+          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(error)) {
+            fieldName = field;
+            break;
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
+        return;
+      }
+
+      var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
+
+      if (ref && typeof ref.focus === "function") {
+        var _error = this.getError(fieldName);
+
+        ref.focus();
+        ref.blur();
+        this.setError(fieldName, _error);
       }
     }
   }, {

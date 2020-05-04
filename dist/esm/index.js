@@ -235,16 +235,31 @@ export default class {
 
   focusOnField(fieldName) {
     if (isNil(fieldName)) {
-      for (const field of this.fields) {
-        if (get(this.errors, field)) {
-          fieldName = field;
-          break;
-        }
-      }
+      fieldName = this.fields[0];
+    }
 
-      if (isNil(fieldName)) {
-        fieldName = this.fields[0];
+    const ref = get(this.refs, fieldName + ".inputRef.current");
+
+    if (ref && typeof ref.focus === "function") {
+      ref.focus();
+    }
+  }
+
+  scrollToError() {
+    this.validateAll(false);
+    let fieldName, error;
+
+    for (const field of this.fields) {
+      error = this.getError(field);
+
+      if (!isEmpty(error)) {
+        fieldName = field;
+        break;
       }
+    }
+
+    if (isNil(fieldName)) {
+      return;
     }
 
     const ref = get(this.refs, fieldName + ".inputRef.current");
@@ -252,6 +267,7 @@ export default class {
     if (ref && typeof ref.focus === "function") {
       const error = this.getError(fieldName);
       ref.focus();
+      ref.blur();
       this.setError(fieldName, error);
     }
   }
