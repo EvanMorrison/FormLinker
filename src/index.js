@@ -57,7 +57,7 @@ export default class{
   }
 
   // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback.
-  setError(fieldName, errors, triggerCallback = true) {
+  setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if(isEmpty(errors)) {
       unset(this.errors, fieldName);
       const nested = fieldName.indexOf(".") > -1;
@@ -75,8 +75,12 @@ export default class{
     } else {
       set(this.errors, fieldName, errors);
     }
-    const fieldRef = get(this.refs, fieldName);
-    fieldRef?.forceUpdate();
+    if(rerender) {
+      const fieldRef = get(this.refs, fieldName);
+      if(typeof fieldRef?.forceUpdate === "function") {
+        fieldRef.forceUpdate();
+      }
+    }
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -87,7 +91,9 @@ export default class{
     this.errors = errors;
     this.fields.forEach(fieldName => {
       const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
-      fieldRef?.forceUpdate();
+      if(typeof fieldRef?.forceUpdate === "function") {
+        fieldRef.forceUpdate();
+      }
     });
     if(triggerCallback) {
       this.changeCallback();
@@ -113,7 +119,9 @@ export default class{
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
-    fieldRef?.forceUpdate();
+    if(typeof fieldRef?.forceUpdate === "function") {
+      fieldRef.forceUpdate();
+    }
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -137,6 +145,10 @@ export default class{
       const value = get(values, fieldName);
       if(typeof value !== "undefined") {
         set(this.data, fieldName, this.convert(fieldName, value));
+        const fieldRef = get(this.refs, fieldName);
+        if(typeof fieldRef?.forceUpdate === "function") {
+          fieldRef.forceUpdate();
+        }
       }
     });
   }
@@ -204,7 +216,7 @@ export default class{
 
   validate(fieldName, triggerCallback = true) {
     const{ errors, formatted, parsed } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, errors, false);
+    this.setError(fieldName, errors, false, false);
     this.setValue(fieldName, formatted, false);
     set(this.parsedData, fieldName, parsed);
 
@@ -245,10 +257,6 @@ export default class{
   /*
    * REFS
    */
-  // returns the ref for an associated input
-  getRef(fieldName) {
-    return(get(this.refs, fieldName + ".inputRef.current"));
-  }
 
   /**
    * ref should be an object with keys "forceUpdate" and "inputRef".
@@ -263,12 +271,17 @@ export default class{
     }
   }
 
+  // returns the ref to the rendered input element for the fieldName
+  getRef(fieldName) {
+    return(get(this.refs, fieldName + ".inputRef.current"));
+  }
+
   focusOnField(fieldName) {
     if(isNil(fieldName)) {
       fieldName = this.fields[0];
     }
     const ref = get(this.refs, fieldName + ".inputRef.current");
-    if(ref && typeof ref.focus === "function") {
+    if(typeof ref?.focus === "function") {
       ref.focus();
     }
   }
@@ -287,7 +300,7 @@ export default class{
       return;
     }
     const ref = get(this.refs, fieldName + ".inputRef.current");
-    if(ref && typeof ref.focus === "function") {
+    if(typeof ref?.focus === "function") {
       const error = this.getError(fieldName);
       ref.focus();
       ref.blur();
