@@ -12,6 +12,7 @@ export default class{
     this.parsedData = options.data || {};
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
+    this.refs = {};
     this.changeCallback = options.onChange || function() {};
   }
 
@@ -74,6 +75,8 @@ export default class{
     } else {
       set(this.errors, fieldName, errors);
     }
+    const fieldRef = get(this.refs, fieldName);
+    fieldRef?.forceUpdate();
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -82,6 +85,10 @@ export default class{
   // setErrors sets the errors object. It also calls the changeCallback.
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
+    this.fields.forEach(fieldName => {
+      const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
+      fieldRef?.forceUpdate();
+    })
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -105,6 +112,8 @@ export default class{
   setValue(fieldName, value, triggerCallback = true) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
+    const fieldRef = get(this.refs, fieldName);
+    fieldRef?.forceUpdate();
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -231,6 +240,18 @@ export default class{
       }
     });
     return(differences);
+  }
+
+  /*
+   * REFS
+   */
+  // provide a forceUpdate and/or ref to the associated input
+  setRef(fieldName, ref) {
+    if(isNil(ref)) {
+      unset(this.refs, fieldName);
+    } else {
+      set(this.refs, fieldName, ref);
+    }
   }
 
   /*
