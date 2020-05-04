@@ -259,6 +259,26 @@ export default class{
     }
   }
 
+  focusOnField(fieldName) {
+    if(isNil(fieldName)) {
+      for(const field of this.fields) {
+        if(get(this.errors, field)) {
+          fieldName = field;
+          break;
+        }
+      }
+      if(isNil(fieldName)) {
+        fieldName = this.fields[0];
+      }
+    }
+    const ref = get(this.refs, fieldName + ".inputRef.current");
+    if(ref && typeof ref.focus === "function") {
+      const error = this.getError(fieldName);
+      ref.focus();
+      this.setError(fieldName, error);
+    }
+  }
+
   /*
    * SCHEMA
   */
