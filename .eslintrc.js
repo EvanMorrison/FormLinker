@@ -3,8 +3,10 @@ module.exports = {
   "plugins": [
     "babel", "standard", "node", "import", "promise"
   ],
-  "parser": "babel",
+  "parser": "babel-eslint",
   "rules": {
+    "no-unused-expressions": 0,
+    "babel/no-unused-expressions": ["error", {allowTernary: true}],
     "space-before-function-paren": ["error", "never"],
     "semi": ["error", "always"],
     "quotes": ["error", "double"],

@@ -88,7 +88,7 @@ export default class{
     this.fields.forEach(fieldName => {
       const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
       fieldRef?.forceUpdate();
-    })
+    });
     if(triggerCallback) {
       this.changeCallback();
     }
