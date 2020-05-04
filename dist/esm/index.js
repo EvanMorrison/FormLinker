@@ -49,7 +49,7 @@ export default class {
     return this.errors;
   }
 
-  setError(fieldName, errors, triggerCallback = true) {
+  setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if (isEmpty(errors)) {
       unset(this.errors, fieldName);
       const nested = fieldName.indexOf(".") > -1;
@@ -70,8 +70,13 @@ export default class {
       set(this.errors, fieldName, errors);
     }
 
-    const fieldRef = get(this.refs, fieldName);
-    fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+    if (rerender) {
+      const fieldRef = get(this.refs, fieldName);
+
+      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+        fieldRef.forceUpdate();
+      }
+    }
 
     if (triggerCallback) {
       this.changeCallback();
@@ -82,7 +87,10 @@ export default class {
     this.errors = errors;
     this.fields.forEach(fieldName => {
       const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
-      fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+
+      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+        fieldRef.forceUpdate();
+      }
     });
 
     if (triggerCallback) {
@@ -102,7 +110,10 @@ export default class {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
-    fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+
+    if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+      fieldRef.forceUpdate();
+    }
 
     if (triggerCallback) {
       this.changeCallback();
@@ -129,6 +140,11 @@ export default class {
 
       if (typeof value !== "undefined") {
         set(this.data, fieldName, this.convert(fieldName, value));
+        const fieldRef = get(this.refs, fieldName);
+
+        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+          fieldRef.forceUpdate();
+        }
       }
     });
   }
@@ -191,7 +207,7 @@ export default class {
       formatted,
       parsed
     } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, errors, false);
+    this.setError(fieldName, errors, false, false);
     this.setValue(fieldName, formatted, false);
     set(this.parsedData, fieldName, parsed);
 
@@ -221,16 +237,16 @@ export default class {
     return differences;
   }
 
-  getRef(fieldName) {
-    return get(this.refs, fieldName + ".inputRef.current");
-  }
-
   setRef(fieldName, ref) {
     if (isNil(ref)) {
       unset(this.refs, fieldName);
     } else {
       set(this.refs, fieldName, ref);
     }
+  }
+
+  getRef(fieldName) {
+    return get(this.refs, fieldName + ".inputRef.current");
   }
 
   focusOnField(fieldName) {
@@ -240,7 +256,7 @@ export default class {
 
     const ref = get(this.refs, fieldName + ".inputRef.current");
 
-    if (ref && typeof ref.focus === "function") {
+    if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
       ref.focus();
     }
   }
@@ -264,7 +280,7 @@ export default class {
 
     const ref = get(this.refs, fieldName + ".inputRef.current");
 
-    if (ref && typeof ref.focus === "function") {
+    if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
       const error = this.getError(fieldName);
       ref.focus();
       ref.blur();

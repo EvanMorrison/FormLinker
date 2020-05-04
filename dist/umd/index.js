@@ -193,6 +193,7 @@ var _default = function () {
     key: "setError",
     value: function setError(fieldName, errors) {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var rerender = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(errors)) {
         Object(lodash__WEBPACK_IMPORTED_MODULE_0__["unset"])(this.errors, fieldName);
@@ -214,8 +215,13 @@ var _default = function () {
         Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.errors, fieldName, errors);
       }
 
-      var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
-      fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+      if (rerender) {
+        var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
+
+        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+          fieldRef.forceUpdate();
+        }
+      }
 
       if (triggerCallback) {
         this.changeCallback();
@@ -230,7 +236,10 @@ var _default = function () {
       this.errors = errors;
       this.fields.forEach(function (fieldName) {
         var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(fieldName, errors) && Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(fieldName, _this3.refs);
-        fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+
+        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+          fieldRef.forceUpdate();
+        }
       });
 
       if (triggerCallback) {
@@ -254,7 +263,10 @@ var _default = function () {
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.data, fieldName, this.mask(fieldName, value));
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, this.format(fieldName, value).parsed);
       var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
-      fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+
+      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+        fieldRef.forceUpdate();
+      }
 
       if (triggerCallback) {
         this.changeCallback();
@@ -288,6 +300,11 @@ var _default = function () {
 
         if (typeof value !== "undefined") {
           Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(_this5.data, fieldName, _this5.convert(fieldName, value));
+          var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(_this5.refs, fieldName);
+
+          if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+            fieldRef.forceUpdate();
+          }
         }
       });
     }
@@ -359,7 +376,7 @@ var _default = function () {
           formatted = _this$format2.formatted,
           parsed = _this$format2.parsed;
 
-      this.setError(fieldName, errors, false);
+      this.setError(fieldName, errors, false, false);
       this.setValue(fieldName, formatted, false);
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, parsed);
 
@@ -394,11 +411,6 @@ var _default = function () {
       return differences;
     }
   }, {
-    key: "getRef",
-    value: function getRef(fieldName) {
-      return Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
-    }
-  }, {
     key: "setRef",
     value: function setRef(fieldName, ref) {
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
@@ -406,6 +418,11 @@ var _default = function () {
       } else {
         Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.refs, fieldName, ref);
       }
+    }
+  }, {
+    key: "getRef",
+    value: function getRef(fieldName) {
+      return Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
     }
   }, {
     key: "focusOnField",
@@ -416,7 +433,7 @@ var _default = function () {
 
       var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
 
-      if (ref && typeof ref.focus === "function") {
+      if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
         ref.focus();
       }
     }
@@ -451,7 +468,7 @@ var _default = function () {
 
       var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
 
-      if (ref && typeof ref.focus === "function") {
+      if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
         var _error = this.getError(fieldName);
 
         ref.focus();
