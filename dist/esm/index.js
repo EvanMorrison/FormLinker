@@ -221,6 +221,10 @@ export default class {
     return differences;
   }
 
+  getRef(fieldName) {
+    return get(this.refs, fieldName + ".inputRef.current");
+  }
+
   setRef(fieldName, ref) {
     if (isNil(ref)) {
       unset(this.refs, fieldName);

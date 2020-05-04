@@ -388,6 +388,11 @@ var _default = function () {
       return differences;
     }
   }, {
+    key: "getRef",
+    value: function getRef(fieldName) {
+      return Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
+    }
+  }, {
     key: "setRef",
     value: function setRef(fieldName, ref) {
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
