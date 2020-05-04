@@ -303,7 +303,9 @@ export default class{
     if(typeof ref?.focus === "function") {
       const error = this.getError(fieldName);
       ref.focus();
-      ref.blur();
+      if(typeof ref.blur === "function") {
+        ref.blur();
+      }
       this.setError(fieldName, error);
     }
   }
