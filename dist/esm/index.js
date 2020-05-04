@@ -11,6 +11,7 @@ export default class {
     this.parsedData = options.data || {};
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
+    this.refs = {};
 
     this.changeCallback = options.onChange || function () {};
   }
@@ -69,6 +70,9 @@ export default class {
       set(this.errors, fieldName, errors);
     }
 
+    const fieldRef = get(this.refs, fieldName);
+    fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+
     if (triggerCallback) {
       this.changeCallback();
     }
@@ -76,6 +80,10 @@ export default class {
 
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
+    this.fields.forEach(fieldName => {
+      const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
+      fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
+    });
 
     if (triggerCallback) {
       this.changeCallback();
@@ -93,6 +101,8 @@ export default class {
   setValue(fieldName, value, triggerCallback = true) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
+    const fieldRef = get(this.refs, fieldName);
+    fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate();
 
     if (triggerCallback) {
       this.changeCallback();
@@ -209,6 +219,14 @@ export default class {
       }
     });
     return differences;
+  }
+
+  setRef(fieldName, ref) {
+    if (isNil(ref)) {
+      unset(this.refs, fieldName);
+    } else {
+      set(this.refs, fieldName, ref);
+    }
   }
 
   updateSchema(schema) {
