@@ -432,7 +432,7 @@ var _default = function () {
     key: "scrollToError",
     value: function scrollToError() {
       this.validateAll(false);
-      var fieldName, error;
+      var fieldName, error, ref;
 
       var _iterator = _createForOfIteratorHelper(this.fields),
           _step;
@@ -443,8 +443,12 @@ var _default = function () {
           error = this.getError(field);
 
           if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(error)) {
-            fieldName = field;
-            break;
+            ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, field + ".inputRef.current");
+
+            if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
+              fieldName = field;
+              break;
+            }
           }
         }
       } catch (err) {
@@ -457,14 +461,16 @@ var _default = function () {
         return;
       }
 
-      var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
-
-      if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
-        var _error = this.getError(fieldName);
-
+      if (typeof ref.focus === "function") {
         ref.focus();
-        ref.blur();
-        this.setError(fieldName, _error);
+
+        if (typeof ref.blur === "function") {
+          setTimeout(function () {
+            ref.blur();
+          });
+        }
+
+        this.setError(fieldName, error);
       }
     }
   }, {

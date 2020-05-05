@@ -263,14 +263,18 @@ export default class {
 
   scrollToError() {
     this.validateAll(false);
-    let fieldName, error;
+    let fieldName, error, ref;
 
     for (const field of this.fields) {
       error = this.getError(field);
 
       if (!isEmpty(error)) {
-        fieldName = field;
-        break;
+        ref = get(this.refs, field + ".inputRef.current");
+
+        if (!isNil(ref)) {
+          fieldName = field;
+          break;
+        }
       }
     }
 
@@ -278,12 +282,15 @@ export default class {
       return;
     }
 
-    const ref = get(this.refs, fieldName + ".inputRef.current");
-
-    if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
-      const error = this.getError(fieldName);
+    if (typeof ref.focus === "function") {
       ref.focus();
-      ref.blur();
+
+      if (typeof ref.blur === "function") {
+        setTimeout(() => {
+          ref.blur();
+        });
+      }
+
       this.setError(fieldName, error);
     }
   }
