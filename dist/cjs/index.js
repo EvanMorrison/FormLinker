@@ -251,12 +251,13 @@ var _default = function () {
     key: "setValue",
     value: function setValue(fieldName, value) {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var setValues = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.data, fieldName, this.mask(fieldName, value));
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, this.format(fieldName, value).parsed);
       var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
 
       if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-        fieldRef.forceUpdate();
+        fieldRef.forceUpdate(setValues);
       }
 
       if (triggerCallback) {
@@ -273,7 +274,7 @@ var _default = function () {
         var value = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(values, fieldName);
 
         if (typeof value !== "undefined") {
-          _this4.setValue(fieldName, value, false);
+          _this4.setValue(fieldName, value, false, true);
         }
       });
 
@@ -294,7 +295,7 @@ var _default = function () {
           var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(_this5.refs, fieldName);
 
           if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-            fieldRef.forceUpdate();
+            fieldRef.forceUpdate(true);
           }
         }
       });
