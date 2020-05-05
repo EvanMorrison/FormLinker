@@ -261,7 +261,8 @@ export default class{
   /**
    * ref should be an object with keys "forceUpdate" and "inputRef".
    * forceupdate should be a function that causes a rerender of the associated component.
-   * inputRef.current should point to the input element rendered by the component.
+   * inputRef.current should point to the input element rendered by the component,
+   * or in the case of MultiSelect, RichEditor, & Summernote, the instance of a React Component.
    */
   setRef(fieldName, ref) {
     if(isNil(ref)) {
@@ -276,6 +277,7 @@ export default class{
     return(get(this.refs, fieldName + ".inputRef.current"));
   }
 
+  // Sets focus on the input associated with fieldName.
   focusOnField(fieldName) {
     if(isNil(fieldName)) {
       fieldName = this.fields[0];
@@ -286,25 +288,29 @@ export default class{
     }
   }
 
+  // Runs validation on the form and scrolls to the first field in the schema/form on the page with an error.
   scrollToError() {
     this.validateAll(false);
-    let fieldName, error;
+    let fieldName, error, ref;
     for(const field of this.fields) {
       error = this.getError(field);
       if(!isEmpty(error)) {
-        fieldName = field;
-        break;
+        ref = get(this.refs, field + ".inputRef.current");
+        if(!isNil(ref)) {
+          fieldName = field;
+          break;
+        }
       }
     }
     if(isNil(fieldName)) {
       return;
     }
-    const ref = get(this.refs, fieldName + ".inputRef.current");
-    if(typeof ref?.focus === "function") {
-      const error = this.getError(fieldName);
+    if(typeof ref.focus === "function") {
       ref.focus();
       if(typeof ref.blur === "function") {
-        ref.blur();
+        setTimeout(() => {
+          ref.blur();
+        });
       }
       this.setError(fieldName, error);
     }

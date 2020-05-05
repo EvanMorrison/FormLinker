@@ -58,6 +58,18 @@ declare module "form-linker" {
     validateAll(triggerCallback?: boolean): void;
     /** Returns an object with fieldNames and values that are different than "original" parameter. If there are no differences returns an empty object */
     extractDifferences(original: any): {};
+    /**
+     * ref should be an object with keys "forceUpdate" and "inputRef".
+     * forceupdate should be a function that causes a rerender of the associated form component.
+     * inputRef.current should point to the input element.
+     */
+    setRef(fieldName: string, ref: {forceUpdate: () => void, inputRef: {current: HTMLElement}}): void;
+    /** Returns the ref to the rendered input element for fieldName */
+    getRef(fieldName: string): HTMLElement;
+    /** Sets focus on the input associated with fieldName */
+    focusOnField(fieldName: string): void;
+    /** Runs validation on the form and scrolls to the first field in the schema/form on the page with an error. */
+    scrollToError(): void;
     /** Updates the schema for the current FormLinker instance - used if the fieldNames change or are set dynamically */
     updateSchema(schema: {}): void;
   }
