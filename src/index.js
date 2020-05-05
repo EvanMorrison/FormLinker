@@ -115,12 +115,12 @@ export default class{
   }
 
   // setValue sets the field value to the masked value passed in. It also calls the changeCallback.
-  setValue(fieldName, value, triggerCallback = true) {
+  setValue(fieldName, value, triggerCallback = true, setValues = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
     if(typeof fieldRef?.forceUpdate === "function") {
-      fieldRef.forceUpdate();
+      fieldRef.forceUpdate(setValues);
     }
     if(triggerCallback) {
       this.changeCallback();
@@ -132,7 +132,7 @@ export default class{
     this.fields.forEach((fieldName) => {
       const value = get(values, fieldName);
       if(typeof value !== "undefined") {
-        this.setValue(fieldName, value, false);
+        this.setValue(fieldName, value, false, true);
       }
     });
     if(triggerCallback) {
@@ -147,7 +147,7 @@ export default class{
         set(this.data, fieldName, this.convert(fieldName, value));
         const fieldRef = get(this.refs, fieldName);
         if(typeof fieldRef?.forceUpdate === "function") {
-          fieldRef.forceUpdate();
+          fieldRef.forceUpdate(true);
         }
       }
     });
