@@ -245,13 +245,23 @@ export default class {
   }
 
   focusOnField(fieldName) {
+    var _ref;
+
+    let ref;
+
     if (isNil(fieldName)) {
-      fieldName = this.fields[0];
+      for (const field of this.fields) {
+        ref = get(this.refs, field + ".inputRef.current");
+
+        if (!isNil(ref)) {
+          break;
+        }
+      }
+    } else {
+      ref = get(this.refs, fieldName + ".inputRef.current");
     }
 
-    const ref = get(this.refs, fieldName + ".inputRef.current");
-
-    if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
+    if (typeof ((_ref = ref) === null || _ref === void 0 ? void 0 : _ref.focus) === "function") {
       ref.focus();
     }
   }

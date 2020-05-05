@@ -423,13 +423,33 @@ var _default = function () {
   }, {
     key: "focusOnField",
     value: function focusOnField(fieldName) {
+      var _ref;
+
+      var ref;
+
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
-        fieldName = this.fields[0];
+        var _iterator = _createForOfIteratorHelper(this.fields),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var field = _step.value;
+            ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, field + ".inputRef.current");
+
+            if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
+              break;
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      } else {
+        ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
       }
 
-      var ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
-
-      if (typeof (ref === null || ref === void 0 ? void 0 : ref.focus) === "function") {
+      if (typeof ((_ref = ref) === null || _ref === void 0 ? void 0 : _ref.focus) === "function") {
         ref.focus();
       }
     }
@@ -439,12 +459,12 @@ var _default = function () {
       this.validateAll(false);
       var fieldName, error, ref;
 
-      var _iterator = _createForOfIteratorHelper(this.fields),
-          _step;
+      var _iterator2 = _createForOfIteratorHelper(this.fields),
+          _step2;
 
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var field = _step.value;
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var field = _step2.value;
           error = this.getError(field);
 
           if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(error)) {
@@ -457,9 +477,9 @@ var _default = function () {
           }
         }
       } catch (err) {
-        _iterator.e(err);
+        _iterator2.e(err);
       } finally {
-        _iterator.f();
+        _iterator2.f();
       }
 
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
