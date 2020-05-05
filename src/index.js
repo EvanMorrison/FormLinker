@@ -280,11 +280,19 @@ export default class{
   }
 
   // Sets focus on the input associated with fieldName.
+  // Finds the first field in the schema with a ref if no fieldName is given.
   focusOnField(fieldName) {
+    let ref;
     if(isNil(fieldName)) {
-      fieldName = this.fields[0];
+      for(const field of this.fields) {
+        ref = get(this.refs, field + ".inputRef.current");
+        if(!isNil(ref)) {
+          break;
+        }
+      }
+    } else {
+      ref = get(this.refs, fieldName + ".inputRef.current");
     }
-    const ref = get(this.refs, fieldName + ".inputRef.current");
     if(typeof ref?.focus === "function") {
       ref.focus();
     }
