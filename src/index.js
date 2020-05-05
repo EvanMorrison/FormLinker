@@ -8,8 +8,8 @@ export default class{
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
-    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
+    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
     this.refs = {};
@@ -56,7 +56,8 @@ export default class{
     return(this.errors);
   }
 
-  // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback.
+  // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback,
+  // and rerenders the component if it has registered an update function with the refs.
   setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if(isEmpty(errors)) {
       unset(this.errors, fieldName);
@@ -114,20 +115,25 @@ export default class{
     return(this.data);
   }
 
-  // setValue sets the field value to the masked value passed in. It also calls the changeCallback.
-  setValue(fieldName, value, triggerCallback = true, setValues = false) {
+  /**
+   * setValue sets the field value to the masked value passed in. It also calls the changeCallback.
+   * The forceUpdateFlag provides a way to let the associated React component know if this is part of
+   * an event like setValues or validateAll, where some additional action may be taken in the component.
+   * Leave it as false for regular onChange updates.
+   */
+  setValue(fieldName, value, triggerCallback = true, forceUpdateFlag = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
     if(typeof fieldRef?.forceUpdate === "function") {
-      fieldRef.forceUpdate(setValues);
+      fieldRef.forceUpdate(forceUpdateFlag);
     }
     if(triggerCallback) {
       this.changeCallback();
     }
   }
 
-  // setValues sets the field value to the masked value passed in. It also calls the changeCallback.
+  // setValues sets the field value to the masked value for each fieldName path in the values object passed in. It also calls the changeCallback.
   setValues(values, triggerCallback = true) {
     this.fields.forEach((fieldName) => {
       const value = get(values, fieldName);
@@ -144,11 +150,7 @@ export default class{
     this.fields.forEach((fieldName) => {
       const value = get(values, fieldName);
       if(typeof value !== "undefined") {
-        set(this.data, fieldName, this.convert(fieldName, value));
-        const fieldRef = get(this.refs, fieldName);
-        if(typeof fieldRef?.forceUpdate === "function") {
-          fieldRef.forceUpdate(true);
-        }
+        this.setValue(fieldName, this.convert(fieldName, value), false, true);
       }
     });
   }
@@ -217,7 +219,7 @@ export default class{
   validate(fieldName, triggerCallback = true) {
     const{ errors, formatted, parsed } = this.format(fieldName, this.getValue(fieldName));
     this.setError(fieldName, errors, false, false);
-    this.setValue(fieldName, formatted, false);
+    this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
     if(triggerCallback) {
