@@ -127,8 +127,8 @@ var _default = function () {
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
-    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
+    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
     this.refs = {};
@@ -251,13 +251,13 @@ var _default = function () {
     key: "setValue",
     value: function setValue(fieldName, value) {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      var setValues = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var forceUpdateFlag = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.data, fieldName, this.mask(fieldName, value));
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, this.format(fieldName, value).parsed);
       var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
 
       if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-        fieldRef.forceUpdate(setValues);
+        fieldRef.forceUpdate(forceUpdateFlag);
       }
 
       if (triggerCallback) {
@@ -291,12 +291,7 @@ var _default = function () {
         var value = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(values, fieldName);
 
         if (typeof value !== "undefined") {
-          Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(_this5.data, fieldName, _this5.convert(fieldName, value));
-          var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(_this5.refs, fieldName);
-
-          if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-            fieldRef.forceUpdate(true);
-          }
+          _this5.setValue(fieldName, _this5.convert(fieldName, value), false, true);
         }
       });
     }
@@ -369,7 +364,7 @@ var _default = function () {
           parsed = _this$format2.parsed;
 
       this.setError(fieldName, errors, false, false);
-      this.setValue(fieldName, formatted, false);
+      this.setValue(fieldName, formatted, false, true);
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, parsed);
 
       if (triggerCallback) {

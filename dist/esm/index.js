@@ -7,8 +7,8 @@ export default class {
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
-    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
+    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
     this.refs = {};
@@ -106,13 +106,13 @@ export default class {
     return this.data;
   }
 
-  setValue(fieldName, value, triggerCallback = true, setValues = false) {
+  setValue(fieldName, value, triggerCallback = true, forceUpdateFlag = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
 
     if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-      fieldRef.forceUpdate(setValues);
+      fieldRef.forceUpdate(forceUpdateFlag);
     }
 
     if (triggerCallback) {
@@ -139,12 +139,7 @@ export default class {
       const value = get(values, fieldName);
 
       if (typeof value !== "undefined") {
-        set(this.data, fieldName, this.convert(fieldName, value));
-        const fieldRef = get(this.refs, fieldName);
-
-        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-          fieldRef.forceUpdate(true);
-        }
+        this.setValue(fieldName, this.convert(fieldName, value), false, true);
       }
     });
   }
@@ -208,7 +203,7 @@ export default class {
       parsed
     } = this.format(fieldName, this.getValue(fieldName));
     this.setError(fieldName, errors, false, false);
-    this.setValue(fieldName, formatted, false);
+    this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
     if (triggerCallback) {
