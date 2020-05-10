@@ -108,12 +108,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _default; });
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "lodash");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -136,11 +130,10 @@ var _default = function () {
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
+    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
-    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
-    this.refs = {};
 
     this.changeCallback = options.onChange || function () {};
   }
@@ -193,7 +186,6 @@ var _default = function () {
     key: "setError",
     value: function setError(fieldName, errors) {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      var rerender = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
       if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(errors)) {
         Object(lodash__WEBPACK_IMPORTED_MODULE_0__["unset"])(this.errors, fieldName);
@@ -215,14 +207,6 @@ var _default = function () {
         Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.errors, fieldName, errors);
       }
 
-      if (rerender) {
-        var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
-
-        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-          fieldRef.forceUpdate();
-        }
-      }
-
       if (triggerCallback) {
         this.changeCallback();
       }
@@ -230,17 +214,8 @@ var _default = function () {
   }, {
     key: "setErrors",
     value: function setErrors(errors) {
-      var _this3 = this;
-
       var triggerCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       this.errors = errors;
-      this.fields.forEach(function (fieldName) {
-        var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(fieldName, errors) && Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(fieldName, _this3.refs);
-
-        if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-          fieldRef.forceUpdate();
-        }
-      });
 
       if (triggerCallback) {
         this.changeCallback();
@@ -260,14 +235,8 @@ var _default = function () {
     key: "setValue",
     value: function setValue(fieldName, value) {
       var triggerCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      var forceUpdateFlag = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.data, fieldName, this.mask(fieldName, value));
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, this.format(fieldName, value).parsed);
-      var fieldRef = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName);
-
-      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
-        fieldRef.forceUpdate(forceUpdateFlag);
-      }
 
       if (triggerCallback) {
         this.changeCallback();
@@ -276,14 +245,14 @@ var _default = function () {
   }, {
     key: "setValues",
     value: function setValues(values) {
-      var _this4 = this;
+      var _this3 = this;
 
       var triggerCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       this.fields.forEach(function (fieldName) {
         var value = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(values, fieldName);
 
         if (typeof value !== "undefined") {
-          _this4.setValue(fieldName, value, false, true);
+          _this3.setValue(fieldName, value, false);
         }
       });
 
@@ -294,20 +263,20 @@ var _default = function () {
   }, {
     key: "setValuesFromParsed",
     value: function setValuesFromParsed(values) {
-      var _this5 = this;
+      var _this4 = this;
 
       this.fields.forEach(function (fieldName) {
         var value = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(values, fieldName);
 
         if (typeof value !== "undefined") {
-          _this5.setValue(fieldName, _this5.convert(fieldName, value), false, true);
+          Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(_this4.data, fieldName, _this4.convert(fieldName, value));
         }
       });
     }
   }, {
     key: "format",
     value: function format(fieldName, value) {
-      var _this6 = this;
+      var _this5 = this;
 
       var key = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.schema, fieldName);
       var response = {
@@ -319,8 +288,8 @@ var _default = function () {
 
       if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(key)) {
         key.split(".").forEach(function (formatter) {
-          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(_this6.formatters[formatter])) {
-            response = _this6.formatters[formatter](response);
+          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(_this5.formatters[formatter])) {
+            response = _this5.formatters[formatter](response);
           }
         });
       }
@@ -330,15 +299,15 @@ var _default = function () {
   }, {
     key: "mask",
     value: function mask(fieldName, value) {
-      var _this7 = this;
+      var _this6 = this;
 
       var key = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.schema, fieldName);
       var response = value;
 
       if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(key)) {
         key.split(".").forEach(function (mask) {
-          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(_this7.masks[mask])) {
-            response = _this7.masks[mask].mask(value);
+          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(_this6.masks[mask])) {
+            response = _this6.masks[mask].mask(value);
           }
         });
       }
@@ -372,8 +341,8 @@ var _default = function () {
           formatted = _this$format2.formatted,
           parsed = _this$format2.parsed;
 
-      this.setError(fieldName, errors, false, false);
-      this.setValue(fieldName, formatted, false, true);
+      this.setError(fieldName, errors, false);
+      this.setValue(fieldName, formatted, false);
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, parsed);
 
       if (triggerCallback) {
@@ -383,11 +352,11 @@ var _default = function () {
   }, {
     key: "validateAll",
     value: function validateAll() {
-      var _this8 = this;
+      var _this7 = this;
 
       var triggerCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       this.fields.forEach(function (field) {
-        _this8.validate(field, false);
+        _this7.validate(field, false);
       });
 
       if (triggerCallback) {
@@ -405,98 +374,6 @@ var _default = function () {
         }
       });
       return differences;
-    }
-  }, {
-    key: "setRef",
-    value: function setRef(fieldName, ref) {
-      if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
-        Object(lodash__WEBPACK_IMPORTED_MODULE_0__["unset"])(this.refs, fieldName);
-      } else {
-        Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.refs, fieldName, ref);
-      }
-    }
-  }, {
-    key: "getRef",
-    value: function getRef(fieldName) {
-      return Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
-    }
-  }, {
-    key: "focusOnField",
-    value: function focusOnField(fieldName) {
-      var _ref;
-
-      var ref;
-
-      if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
-        var _iterator = _createForOfIteratorHelper(this.fields),
-            _step;
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var field = _step.value;
-            ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, field + ".inputRef.current");
-
-            if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
-              break;
-            }
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-      } else {
-        ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, fieldName + ".inputRef.current");
-      }
-
-      if (typeof ((_ref = ref) === null || _ref === void 0 ? void 0 : _ref.focus) === "function") {
-        ref.focus();
-      }
-    }
-  }, {
-    key: "scrollToError",
-    value: function scrollToError() {
-      this.validateAll(false);
-      var fieldName, error, ref;
-
-      var _iterator2 = _createForOfIteratorHelper(this.fields),
-          _step2;
-
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var field = _step2.value;
-          error = this.getError(field);
-
-          if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isEmpty"])(error)) {
-            ref = Object(lodash__WEBPACK_IMPORTED_MODULE_0__["get"])(this.refs, field + ".inputRef.current");
-
-            if (!Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(ref)) {
-              fieldName = field;
-              break;
-            }
-          }
-        }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
-
-      if (Object(lodash__WEBPACK_IMPORTED_MODULE_0__["isNil"])(fieldName)) {
-        return;
-      }
-
-      if (typeof ref.focus === "function") {
-        ref.focus();
-
-        if (typeof ref.blur === "function") {
-          setTimeout(function () {
-            ref.blur();
-          });
-        }
-
-        this.setError(fieldName, error);
-      }
     }
   }, {
     key: "updateSchema",
