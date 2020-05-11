@@ -117,16 +117,16 @@ export default class{
 
   /**
    * setValue sets the field value to the masked value passed in. It also calls the changeCallback.
-   * The forceUpdateFlag provides a way to let the associated React component know if this is part of
+   * The updateActionFlag provides a way to let the associated React component know if this is part of
    * an event like setValues or validateAll, where some additional action may be taken in the component.
    * Leave it as false for regular onChange updates.
    */
-  setValue(fieldName, value, triggerCallback = true, forceUpdateFlag = false) {
+  setValue(fieldName, value, triggerCallback = true, updateActionFlag = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
     const fieldRef = get(this.refs, fieldName);
     if(typeof fieldRef?.forceUpdate === "function") {
-      fieldRef.forceUpdate(forceUpdateFlag);
+      fieldRef.forceUpdate(updateActionFlag);
     }
     if(triggerCallback) {
       this.changeCallback();
