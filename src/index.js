@@ -8,10 +8,11 @@ export default class{
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
-    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
+    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
+    this.refs = {};
     this.changeCallback = options.onChange || function() {};
   }
 
@@ -55,8 +56,9 @@ export default class{
     return(this.errors);
   }
 
-  // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback.
-  setError(fieldName, errors, triggerCallback = true) {
+  // setError removes errors data if an empty array or sets the errors. It also calls the changeCallback,
+  // and rerenders the component if it has registered an update function with the refs.
+  setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if(isEmpty(errors)) {
       unset(this.errors, fieldName);
       const nested = fieldName.indexOf(".") > -1;
@@ -74,6 +76,12 @@ export default class{
     } else {
       set(this.errors, fieldName, errors);
     }
+    if(rerender) {
+      const fieldRef = get(this.refs, fieldName);
+      if(typeof fieldRef?.forceUpdate === "function") {
+        fieldRef.forceUpdate();
+      }
+    }
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -82,6 +90,12 @@ export default class{
   // setErrors sets the errors object. It also calls the changeCallback.
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
+    this.fields.forEach(fieldName => {
+      const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
+      if(typeof fieldRef?.forceUpdate === "function") {
+        fieldRef.forceUpdate();
+      }
+    });
     if(triggerCallback) {
       this.changeCallback();
     }
@@ -101,21 +115,30 @@ export default class{
     return(this.data);
   }
 
-  // setValue sets the field value to the masked value passed in. It also calls the changeCallback.
-  setValue(fieldName, value, triggerCallback = true) {
+  /**
+   * setValue sets the field value to the masked value passed in. It also calls the changeCallback.
+   * The updateActionFlag provides a way to let the associated React component know if this is part of
+   * an event like setValues or validateAll, where some additional action may be taken in the component.
+   * Leave it as false for regular onChange updates.
+   */
+  setValue(fieldName, value, triggerCallback = true, updateActionFlag = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
+    const fieldRef = get(this.refs, fieldName);
+    if(typeof fieldRef?.forceUpdate === "function") {
+      fieldRef.forceUpdate(updateActionFlag);
+    }
     if(triggerCallback) {
       this.changeCallback();
     }
   }
 
-  // setValues sets the field value to the masked value passed in. It also calls the changeCallback.
+  // setValues sets the field value to the masked value for each fieldName path in the values object passed in. It also calls the changeCallback.
   setValues(values, triggerCallback = true) {
     this.fields.forEach((fieldName) => {
       const value = get(values, fieldName);
       if(typeof value !== "undefined") {
-        this.setValue(fieldName, value, false);
+        this.setValue(fieldName, value, false, true);
       }
     });
     if(triggerCallback) {
@@ -127,7 +150,7 @@ export default class{
     this.fields.forEach((fieldName) => {
       const value = get(values, fieldName);
       if(typeof value !== "undefined") {
-        set(this.data, fieldName, this.convert(fieldName, value));
+        this.setValue(fieldName, this.convert(fieldName, value), false, true);
       }
     });
   }
@@ -195,8 +218,8 @@ export default class{
 
   validate(fieldName, triggerCallback = true) {
     const{ errors, formatted, parsed } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, errors, false);
-    this.setValue(fieldName, formatted, false);
+    this.setError(fieldName, errors, false, false);
+    this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
     if(triggerCallback) {
@@ -231,6 +254,76 @@ export default class{
       }
     });
     return(differences);
+  }
+
+  /*
+   * REFS
+   */
+
+  /**
+   * ref should be an object with keys "forceUpdate" and "inputRef".
+   * forceupdate should be a function that causes a rerender of the associated component.
+   * inputRef.current should point to the input element rendered by the component,
+   * or in the case of MultiSelect, RichEditor, & Summernote, the instance of a React Component.
+   */
+  setRef(fieldName, ref) {
+    if(isNil(ref)) {
+      unset(this.refs, fieldName);
+    } else {
+      set(this.refs, fieldName, ref);
+    }
+  }
+
+  // returns the ref to the rendered input element for the fieldName
+  getRef(fieldName) {
+    return(get(this.refs, fieldName + ".inputRef.current"));
+  }
+
+  // Sets focus on the input associated with fieldName.
+  // Finds the first field in the schema with a ref if no fieldName is given.
+  focusOnField(fieldName) {
+    let ref;
+    if(isNil(fieldName)) {
+      for(const field of this.fields) {
+        ref = get(this.refs, field + ".inputRef.current");
+        if(!isNil(ref)) {
+          break;
+        }
+      }
+    } else {
+      ref = get(this.refs, fieldName + ".inputRef.current");
+    }
+    if(typeof ref?.focus === "function") {
+      ref.focus();
+    }
+  }
+
+  // Runs validation on the form and scrolls to the first field in the schema/form on the page with an error.
+  scrollToError() {
+    this.validateAll(false);
+    let fieldName, error, ref;
+    for(const field of this.fields) {
+      error = this.getError(field);
+      if(!isEmpty(error)) {
+        ref = get(this.refs, field + ".inputRef.current");
+        if(!isNil(ref)) {
+          fieldName = field;
+          break;
+        }
+      }
+    }
+    if(isNil(fieldName)) {
+      return;
+    }
+    if(typeof ref.focus === "function") {
+      ref.focus();
+      if(typeof ref.blur === "function") {
+        setTimeout(() => {
+          ref.blur();
+        });
+      }
+      this.setError(fieldName, error);
+    }
   }
 
   /*

@@ -1,9 +1,12 @@
 module.exports = {
   "extends": "standard",
   "plugins": [
-    "standard", "node", "import", "promise"
+    "babel", "standard", "node", "import", "promise"
   ],
+  "parser": "babel-eslint",
   "rules": {
+    "no-unused-expressions": 0,
+    "babel/no-unused-expressions": ["error", {allowTernary: true}],
     "space-before-function-paren": ["error", "never"],
     "semi": ["error", "always"],
     "quotes": ["error", "double"],
