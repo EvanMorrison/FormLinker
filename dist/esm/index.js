@@ -7,10 +7,11 @@ export default class {
     this.formatters = options.formatters || {};
     this.masks = options.masks || {};
     this.data = {};
-    this.setValuesFromParsed(options.data || {}, false);
     this.parsedData = options.data || {};
+    this.setValuesFromParsed(options.data || {});
     this.originalData = Object.assign({}, this.parsedData);
     this.errors = {};
+    this.refs = {};
 
     this.changeCallback = options.onChange || function () {};
   }
@@ -48,7 +49,7 @@ export default class {
     return this.errors;
   }
 
-  setError(fieldName, errors, triggerCallback = true) {
+  setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if (isEmpty(errors)) {
       unset(this.errors, fieldName);
       const nested = fieldName.indexOf(".") > -1;
@@ -69,6 +70,14 @@ export default class {
       set(this.errors, fieldName, errors);
     }
 
+    if (rerender) {
+      const fieldRef = get(this.refs, fieldName);
+
+      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+        fieldRef.forceUpdate();
+      }
+    }
+
     if (triggerCallback) {
       this.changeCallback();
     }
@@ -76,6 +85,13 @@ export default class {
 
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
+    this.fields.forEach(fieldName => {
+      const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
+
+      if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+        fieldRef.forceUpdate();
+      }
+    });
 
     if (triggerCallback) {
       this.changeCallback();
@@ -90,9 +106,14 @@ export default class {
     return this.data;
   }
 
-  setValue(fieldName, value, triggerCallback = true) {
+  setValue(fieldName, value, triggerCallback = true, updateActionFlag = false) {
     set(this.data, fieldName, this.mask(fieldName, value));
     set(this.parsedData, fieldName, this.format(fieldName, value).parsed);
+    const fieldRef = get(this.refs, fieldName);
+
+    if (typeof (fieldRef === null || fieldRef === void 0 ? void 0 : fieldRef.forceUpdate) === "function") {
+      fieldRef.forceUpdate(updateActionFlag);
+    }
 
     if (triggerCallback) {
       this.changeCallback();
@@ -104,7 +125,7 @@ export default class {
       const value = get(values, fieldName);
 
       if (typeof value !== "undefined") {
-        this.setValue(fieldName, value, false);
+        this.setValue(fieldName, value, false, true);
       }
     });
 
@@ -118,7 +139,7 @@ export default class {
       const value = get(values, fieldName);
 
       if (typeof value !== "undefined") {
-        set(this.data, fieldName, this.convert(fieldName, value));
+        this.setValue(fieldName, this.convert(fieldName, value), false, true);
       }
     });
   }
@@ -181,8 +202,8 @@ export default class {
       formatted,
       parsed
     } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, errors, false);
-    this.setValue(fieldName, formatted, false);
+    this.setError(fieldName, errors, false, false);
+    this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
     if (triggerCallback) {
@@ -209,6 +230,74 @@ export default class {
       }
     });
     return differences;
+  }
+
+  setRef(fieldName, ref) {
+    if (isNil(ref)) {
+      unset(this.refs, fieldName);
+    } else {
+      set(this.refs, fieldName, ref);
+    }
+  }
+
+  getRef(fieldName) {
+    return get(this.refs, fieldName + ".inputRef.current");
+  }
+
+  focusOnField(fieldName) {
+    var _ref;
+
+    let ref;
+
+    if (isNil(fieldName)) {
+      for (const field of this.fields) {
+        ref = get(this.refs, field + ".inputRef.current");
+
+        if (!isNil(ref)) {
+          break;
+        }
+      }
+    } else {
+      ref = get(this.refs, fieldName + ".inputRef.current");
+    }
+
+    if (typeof ((_ref = ref) === null || _ref === void 0 ? void 0 : _ref.focus) === "function") {
+      ref.focus();
+    }
+  }
+
+  scrollToError() {
+    this.validateAll(false);
+    let fieldName, error, ref;
+
+    for (const field of this.fields) {
+      error = this.getError(field);
+
+      if (!isEmpty(error)) {
+        ref = get(this.refs, field + ".inputRef.current");
+
+        if (!isNil(ref)) {
+          fieldName = field;
+          break;
+        }
+      }
+    }
+
+    if (isNil(fieldName)) {
+      return;
+    }
+
+    if (typeof ref.focus === "function") {
+      ref.focus();
+
+      if (typeof ref.blur === "function") {
+        setTimeout(() => {
+          ref.blur();
+        });
+      }
+
+      this.setError(fieldName, error);
+    }
   }
 
   updateSchema(schema) {
