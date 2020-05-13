@@ -153,3 +153,33 @@ test("complex validate", t => {
   fl.validate("foo");
   t.deepEqual(fl.getError("foo"), ["FormFormatters.required"]);
 });
+
+test("merge custom errors", t => {
+  const customErrors = {
+    "company.name": ["That name is taken"]
+  };
+
+  const formatters = {
+    required: RequiredFormatter
+  };
+
+  const fl = new FormLinker({
+    data: {
+      company: {
+        name: ""
+      }
+    },
+    formatters,
+    schema: {
+      company: {
+        name: "string.required"
+      }
+    }
+  });
+
+  fl.validateAll(customErrors);
+  t.deepEqual(fl.getError("company.name"), ["That name is taken", "FormFormatters.required"]);
+  customErrors["company.name"] = ["Name is invalid"];
+  fl.scrollToError(customErrors);
+  t.deepEqual(fl.getError("company.name"), ["Name is invalid", "FormFormatters.required"]);
+});

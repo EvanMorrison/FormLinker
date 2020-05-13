@@ -52,10 +52,10 @@ declare module "form-linker" {
     mask(fieldName: string, value: any): any;
     /** Runs this.format on each field until it finds one with a validation error and returns false. Returns true if no error is found. */
     isValid(): boolean;
-    /** Validates the given field. Internally runs this.format on the given field, then updates the field's errors, data value and parsedData value. Forces a rerender of the associated React component to show any errors. */
-    validate(fieldName: string, triggerCallback?: boolean): void;
-    /** Runs this.validate for every field */
-    validateAll(triggerCallback?: boolean): void;
+    /** Validates the given field. Internally runs this.format on the given field, then updates the field's errors, data value and parsedData value. Forces a rerender of the associated React component to show any errors. If "serverValidation" errors are provided, they will be merged with the formLinker validation errors. */
+    validate(fieldName: string, triggerCallback?: boolean, serverValidation?: string[]): void;
+    /** Runs this.validate for every field. If arg is an object of fieldName/error key-value pairs, it will be merged with the formLinker validation errors. */
+    validateAll(arg?: boolean | {[fieldName: string]: string[]}): void;
     /** Returns an object with fieldNames and values that are different than "original" parameter. If there are no differences returns an empty object */
     extractDifferences(original: any): {};
     /**
@@ -68,8 +68,8 @@ declare module "form-linker" {
     getRef(fieldName: string): HTMLElement;
     /** Sets focus on the input associated with fieldName */
     focusOnField(fieldName: string): void;
-    /** Runs validation on the form and scrolls to the first field in the schema/form on the page with an error. */
-    scrollToError(): void;
+    /** Runs validation on the form and scrolls to the first field in the schema/form on the page with an error. Takes an optional argument containing custom errors to be merged with the formLinker validation errors. */
+    scrollToError(errors?: {[fieldName: string]: string[]}): void;
     /** Updates the schema for the current FormLinker instance - used if the fieldNames change or are set dynamically */
     updateSchema(schema: {}): void;
   }
