@@ -68,8 +68,8 @@ declare module "form-linker" {
     getRef(fieldName: string): HTMLElement;
     /** Sets focus on the input associated with fieldName */
     focusOnField(fieldName: string): void;
-    /** Runs validation on the form and scrolls to the first field in the schema/form on the page with an error. Takes an optional argument containing custom errors to be merged with the formLinker validation errors. Returns the fieldName that it scrolled to. */
-    scrollToError(errors?: {[fieldName: string]: string[]}): string;
+    /** Runs validation on the form and scrolls to the first field in the schema/form on the page with an error. Takes an optional argument containing custom errors to be merged with the formLinker validation errors. */
+    scrollToError(errors?: {[fieldName: string]: string[]}): void;
     /** Updates the schema for the current FormLinker instance - used if the fieldNames change or are set dynamically */
     updateSchema(schema: {}): void;
   }

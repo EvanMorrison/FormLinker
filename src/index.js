@@ -334,7 +334,6 @@ export default class{
         setTimeout(() => {
           ref.blur();
           this.setError(fieldName, error);
-          return fieldName;
         });
       }
     }
