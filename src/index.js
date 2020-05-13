@@ -237,7 +237,6 @@ export default class{
 
     this.fields.forEach(field => {
       const error = serverValidationErrors[field];
-      console.log(field, error);
       this.validate(field, false, error);
     });
 
