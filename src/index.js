@@ -216,9 +216,9 @@ export default class{
     return(flag);
   }
 
-  validate(fieldName, triggerCallback = true) {
+  validate(fieldName, triggerCallback = true, serverValidation = []) {
     const{ errors, formatted, parsed } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, errors, false, false);
+    this.setError(fieldName, [...serverValidation, ...errors], false, false);
     this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
@@ -227,9 +227,18 @@ export default class{
     }
   }
 
-  validateAll(triggerCallback = true) {
-    this.fields.forEach((field) => {
-      this.validate(field, false);
+  validateAll(arg) {
+    let triggerCallback = true;
+    let serverValidationErrors = {};
+    if(typeof arg === "object") {
+      serverValidationErrors = arg;
+      triggerCallback = false;
+    }
+
+    this.fields.forEach(field => {
+      const error = serverValidationErrors[field];
+      console.log(field, error);
+      this.validate(field, false, error);
     });
 
     if(triggerCallback) {
@@ -299,9 +308,11 @@ export default class{
   }
 
   // Runs validation on the form and scrolls to the first field in the schema/form on the page with an error.
-  scrollToError() {
-    this.validateAll(false);
+  scrollToError(errors = {}) {
+    this.validateAll(errors);
+
     let fieldName, error, ref;
+
     for(const field of this.fields) {
       error = this.getError(field);
       if(!isEmpty(error)) {
@@ -312,17 +323,20 @@ export default class{
         }
       }
     }
+
     if(isNil(fieldName)) {
       return;
     }
+
     if(typeof ref.focus === "function") {
       ref.focus();
       if(typeof ref.blur === "function") {
         setTimeout(() => {
           ref.blur();
+          this.setError(fieldName, error);
+          return fieldName;
         });
       }
-      this.setError(fieldName, error);
     }
   }
 
