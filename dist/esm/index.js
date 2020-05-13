@@ -196,13 +196,13 @@ export default class {
     return flag;
   }
 
-  validate(fieldName, triggerCallback = true, serverValidation = []) {
+  validate(fieldName, triggerCallback = true) {
     const {
       errors,
       formatted,
       parsed
     } = this.format(fieldName, this.getValue(fieldName));
-    this.setError(fieldName, [...serverValidation, ...errors], false, false);
+    this.setError(fieldName, errors, false, false);
     this.setValue(fieldName, formatted, false, true);
     set(this.parsedData, fieldName, parsed);
 
@@ -211,18 +211,9 @@ export default class {
     }
   }
 
-  validateAll(arg) {
-    let triggerCallback = true;
-    let serverValidationErrors = {};
-
-    if (typeof arg === "object") {
-      serverValidationErrors = arg;
-      triggerCallback = false;
-    }
-
+  validateAll(triggerCallback = true) {
     this.fields.forEach(field => {
-      const error = serverValidationErrors[field];
-      this.validate(field, false, error);
+      this.validate(field, false);
     });
 
     if (triggerCallback) {
@@ -275,8 +266,8 @@ export default class {
     }
   }
 
-  scrollToError(errors = {}) {
-    this.validateAll(errors);
+  scrollToError() {
+    this.validateAll(false);
     let fieldName, error, ref;
 
     for (const field of this.fields) {
@@ -302,9 +293,10 @@ export default class {
       if (typeof ref.blur === "function") {
         setTimeout(() => {
           ref.blur();
-          this.setError(fieldName, error);
         });
       }
+
+      this.setError(fieldName, error);
     }
   }
 

@@ -101,15 +101,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
@@ -365,14 +357,13 @@ var _default = function () {
     key: "validate",
     value: function validate(fieldName) {
       var triggerCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      var serverValidation = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
       var _this$format2 = this.format(fieldName, this.getValue(fieldName)),
           errors = _this$format2.errors,
           formatted = _this$format2.formatted,
           parsed = _this$format2.parsed;
 
-      this.setError(fieldName, [].concat(_toConsumableArray(serverValidation), _toConsumableArray(errors)), false, false);
+      this.setError(fieldName, errors, false, false);
       this.setValue(fieldName, formatted, false, true);
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["set"])(this.parsedData, fieldName, parsed);
 
@@ -382,21 +373,12 @@ var _default = function () {
     }
   }, {
     key: "validateAll",
-    value: function validateAll(arg) {
+    value: function validateAll() {
       var _this8 = this;
 
-      var triggerCallback = true;
-      var serverValidationErrors = {};
-
-      if (_typeof(arg) === "object") {
-        serverValidationErrors = arg;
-        triggerCallback = false;
-      }
-
+      var triggerCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       this.fields.forEach(function (field) {
-        var error = serverValidationErrors[field];
-
-        _this8.validate(field, false, error);
+        _this8.validate(field, false);
       });
 
       if (triggerCallback) {
@@ -465,10 +447,7 @@ var _default = function () {
   }, {
     key: "scrollToError",
     value: function scrollToError() {
-      var _this9 = this;
-
-      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.validateAll(errors);
+      this.validateAll(false);
       var fieldName, error, ref;
 
       var _iterator2 = _createForOfIteratorHelper(this.fields),
@@ -504,10 +483,10 @@ var _default = function () {
         if (typeof ref.blur === "function") {
           setTimeout(function () {
             ref.blur();
-
-            _this9.setError(fieldName, error);
           });
         }
+
+        this.setError(fieldName, error);
       }
     }
   }, {

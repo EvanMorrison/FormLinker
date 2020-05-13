@@ -91,7 +91,7 @@ export default class{
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
     this.fields.forEach(fieldName => {
-      const fieldRef = get(fieldName, errors) && get(fieldName, this.refs);
+      const fieldRef = get(errors, fieldName) && get(this.refs, fieldName);
       if(typeof fieldRef?.forceUpdate === "function") {
         fieldRef.forceUpdate();
       }
