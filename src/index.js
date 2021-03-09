@@ -203,7 +203,10 @@ export default class{
 
   // format returns formatter results. If no formatter is defined for the schema key, then the formatter structure is returned assuming true.
   format(fieldName, value) {
-    const key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
+    let key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
+
+    if(Array.isArray(key)) key = "array";
+
     let response = {
       errors: [],
       formatted: value,
@@ -228,7 +231,10 @@ export default class{
 
   // mask masks data based on schema key. If no mask is defined for the schema key, then the original value is returned.
   mask(fieldName, value) {
-    const key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
+    let key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
+
+    if(Array.isArray(key)) key = "array";
+
     let response = value;
 
     if(!isNil(key)) {
@@ -252,7 +258,7 @@ export default class{
     for(let i = 0; i < this.fields.length; i++) {
       if(this.fields[i].includes("[0]")) {
         const parts = this.fields[i].split("[0]");
-        const length = get(values, parts[0], []).length();
+        const length = get(values, parts[0], []).length;
         for(let j = 0; j < length; j++) {
           const field = parts[0] + "[" + j + "]" + parts[1];
           const { valid } = this.format(field, get(values, field));
@@ -322,9 +328,12 @@ export default class{
     const data = this.parsedData;
 
     this.fields.forEach((fieldName) => {
+      if(Array.isArray(get(this.schema, fieldName))) return;
       if(fieldName.includes("[0]")) {
         const [p1, p2] = fieldName.split("[0]");
-        const length = get(original, p1, []).length;
+        const lengthOrig = get(original, p1, []).length;
+        const lengthCurr = get(data, p1, []).length;
+        const length = Math.max(lengthCurr, lengthOrig);
         for(let i = 0; i < length; i++) {
           const path = p1 + "[" + i + "]" + p2;
           if((isNil(get(original, path)) || get(original, path) === "") && (isNil(get(data, path)) || get(data, path) === "")) {

@@ -19,17 +19,29 @@ test("Deep Data", t => {
   const fl = new FormLinker({
     data: {
       foo: {
-        bar: "Test"
+        bar: "Test",
+        baz: [
+          { zip: "not this" },
+          {
+            zip: "here it is"
+          }
+        ]
       }
     },
     schema: {
       foo: {
-        bar: "string"
+        bar: "string",
+        baz: [
+          {
+            zip: "string"
+          }
+        ]
       }
     }
   });
 
   t.is(fl.getValue("foo.bar"), "Test");
+  t.is(fl.getValue("foo.baz[1]zip"), "here it is");
   t.true(fl.isValid());
 });
 
@@ -174,5 +186,29 @@ test("Invalid deep data number", t => {
   });
 
   t.is(fl.getValue("foo.bar"), null);
+  t.true(fl.isValid());
+});
+
+test("Deep data array in array", t => {
+  const fl = new FormLinker({
+    data: {
+      foo: [
+        {},
+        {},
+        {
+          keywords: ["bar", "biz"]
+        }
+      ]
+    },
+    schema: {
+      foo: [
+        {
+          keywords: "array"
+        }
+      ]
+    }
+  });
+
+  t.deepEqual(fl.getValue("foo[2]keywords"), ["bar", "biz"]);
   t.true(fl.isValid());
 });

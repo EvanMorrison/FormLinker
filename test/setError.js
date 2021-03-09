@@ -7,12 +7,19 @@ test("set error", t => {
       foo: "bar"
     },
     schema: {
-      foo: "string"
+      foo: "string",
+      bar: [
+        {
+          baz: "string"
+        }
+      ]
     }
   });
 
   fl.setError("foo", ["new bar"]);
   t.deepEqual(fl.getError("foo"), ["new bar"]);
+  fl.setError("bar[2]baz", ["out of bounds"]);
+  t.deepEqual(fl.getError("bar[2]baz"), ["out of bounds"]);
 });
 
 test("set empty error", t => {
@@ -24,7 +31,12 @@ test("set empty error", t => {
       foo: "string",
       bar: {
         baz: {
-          qux: "string"
+          qux: "string",
+          fix: [
+            {
+              par: "string"
+            }
+          ]
         }
       }
     }
@@ -38,5 +50,9 @@ test("set empty error", t => {
   t.deepEqual(fl.getError("bar.baz.qux"), ["new bar"]);
   fl.setError("bar.baz.qux", []);
   t.deepEqual(fl.getError("bar.baz.qux"), []);
+  fl.setError("bar.baz.fix[1]par", ["required"]);
+  t.deepEqual(fl.getError("bar.baz.fix[1]par"), ["required"]);
+  t.deepEqual(fl.getErrors(), { bar: { baz: { fix: [undefined, { par: ["required"] }] } } });
+  fl.setError("bar.baz.fix[1]par", []);
   t.deepEqual(fl.errors, {});
 });

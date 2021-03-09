@@ -39,7 +39,29 @@ test("complex original data", t => {
     },
     boy: {
       happy: true,
-      sad: false
+      sad: false,
+      hobbies: [
+        {
+          name: "stamps",
+          description: "collecting",
+          yearStarted: 2000,
+          keywords: ["geeky", "sticky"],
+          favorite: {
+            name: "Elvis",
+            type: "first class"
+          }
+        },
+        {
+          name: "baseball cards",
+          description: "collecting",
+          yearStarted: 1990,
+          keywords: ["cool", "sports", "valuable"],
+          favorite: {
+            name: "Hank Aaron",
+            type: "player"
+          }
+        }
+      ]
     }
   };
 
@@ -63,7 +85,17 @@ test("complex original data", t => {
       },
       boy: {
         happy: "boolean",
-        sad: "boolean"
+        sad: "boolean",
+        hobbies: [{
+          name: "string",
+          description: "string",
+          yearStarted: "number",
+          keywords: "array",
+          favorite: {
+            name: "string",
+            type: "string"
+          }
+        }]
       }
     }
   });

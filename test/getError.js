@@ -24,12 +24,19 @@ test("get error", t => {
     },
     schema: {
       schema: {
-        foo: "string"
+        foo: "string",
+        bar: [
+          {
+            baz: "string"
+          }
+        ]
       }
     }
   });
 
   fl.setError("foo", ["test"]);
   t.deepEqual(fl.getError("foo"), ["test"]);
+  fl.setError("bar[2]baz", ["required"]);
+  t.deepEqual(fl.getError("bar[2]baz"), ["required"]);
   t.true(fl.isValid());
 });

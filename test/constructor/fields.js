@@ -22,7 +22,17 @@ test("schema fields", t => {
         personality: {
           mood: "string",
           quality: "number"
-        }
+        },
+        hobbies: [{
+          name: "string",
+          description: "string",
+          yearStarted: "number",
+          keywords: "array",
+          favorite: {
+            name: "string",
+            type: "string"
+          }
+        }]
       },
       boy: {
         happy: "boolean",
@@ -31,5 +41,21 @@ test("schema fields", t => {
     }
   });
 
-  t.deepEqual(["foo", "bar", "girl.happy", "girl.sad", "girl.personality.mood", "girl.personality.quality", "boy.happy", "boy.sad"], fl.fields);
+  t.deepEqual([
+    "foo",
+    "bar",
+    "girl.happy",
+    "girl.sad",
+    "girl.personality.mood",
+    "girl.personality.quality",
+    "girl.hobbies",
+    "girl.hobbies[0]name",
+    "girl.hobbies[0]description",
+    "girl.hobbies[0]yearStarted",
+    "girl.hobbies[0]keywords",
+    "girl.hobbies[0]favorite.name",
+    "girl.hobbies[0]favorite.type",
+    "boy.happy",
+    "boy.sad"],
+  fl.fields);
 });

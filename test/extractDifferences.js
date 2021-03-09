@@ -110,7 +110,29 @@ test("extractDifferences multiple nested fields with many differences", t => {
       },
       boy: {
         happy: true,
-        sad: false
+        sad: false,
+        hobbies: [
+          {
+            name: "stamps",
+            description: "collecting",
+            yearStarted: 2000,
+            keywords: ["geeky", "sticky"],
+            favorite: {
+              name: "Elvis",
+              type: "first class"
+            }
+          },
+          {
+            name: "baseball cards",
+            description: "collecting",
+            yearStarted: 1990,
+            keywords: ["cool", "sports", "valuable"],
+            favorite: {
+              name: "Hank Aaron",
+              type: "player"
+            }
+          }
+        ]
       }
     },
     schema: {
@@ -122,7 +144,17 @@ test("extractDifferences multiple nested fields with many differences", t => {
       },
       boy: {
         happy: "boolean",
-        sad: "boolean"
+        sad: "boolean",
+        hobbies: [{
+          name: "string",
+          description: "string",
+          yearStarted: "number",
+          keywords: "array",
+          favorite: {
+            name: "string",
+            type: "string"
+          }
+        }]
       }
     }
   });
@@ -136,9 +168,57 @@ test("extractDifferences multiple nested fields with many differences", t => {
     },
     boy: {
       happy: false,
-      sad: true
+      sad: true,
+      hobbies: [
+        {
+          name: "stamps",
+          description: "collecting"
+        },
+        {
+          name: "baseball cards"
+        }
+      ]
     }
   };
-  t.deepEqual(fl.extractDifferences(original), { foo: 42, girl: { happy: true, sad: false }, boy: { happy: true, sad: false } });
+  t.deepEqual(
+    fl.extractDifferences(original),
+    {
+      foo: 42,
+      girl: {
+        happy: true,
+        sad: false
+      },
+      boy: {
+        happy: true,
+        sad: false,
+        hobbies: [
+          {
+            favorite: {
+              name: "Elvis",
+              type: "first class"
+            },
+            keywords: [
+              "geeky",
+              "sticky"
+            ],
+            yearStarted: 2000
+          },
+          {
+            description: "collecting",
+            favorite: {
+              name: "Hank Aaron",
+              type: "player"
+            },
+            keywords: [
+              "cool",
+              "sports",
+              "valuable"
+            ],
+            yearStarted: 1990
+          }
+        ]
+
+      }
+    });
   t.true(fl.isValid());
 });
