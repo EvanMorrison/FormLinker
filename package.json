@@ -4,6 +4,7 @@
   "private": false,
   "description": "Links form elements to each other.",
   "author": "AlchemyAlcove",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/AlchemyAlcove/FormLinker"

@@ -54,6 +54,7 @@ const umdBuild = {
   output: {
     ...baseConfig.output,
     path: join(__dirname, "dist/umd"),
+    library: "formLinker",
     libraryTarget: "umd"
   }
 };
