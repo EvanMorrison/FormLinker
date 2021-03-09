@@ -19,7 +19,7 @@ export default class{
   // calcFields should be used only to instantiate the fields instance variable
   calcFields(schema = this.schema, prefix = "", fields = []) {
     Object.keys(schema).forEach((key) => {
-      if(Array.isArray[key]) {
+      if(Array.isArray(schema[key])) {
         fields.push(prefix + key);
         this.calcFields(schema[key][0], prefix + key + "[0]", fields);
       } else if(typeof schema[key] === "object") {
@@ -98,9 +98,20 @@ export default class{
   setErrors(errors, triggerCallback = true) {
     this.errors = errors;
     this.fields.forEach(fieldName => {
-      const fieldRef = get(errors, fieldName) && get(this.refs, fieldName);
-      if(typeof fieldRef?.forceUpdate === "function") {
-        fieldRef.forceUpdate();
+      if (fieldName.includes("[0]")) {
+        const parts = fieldName.split("[0]");
+        const length = get(errors, parts[0], []).length;
+        for (let i = 0; i < length; i++) {
+          const fieldRef = get(errors, parts[0])[i] && get(this.refs, fieldName);
+          if(typeof fieldRef?.forceUpdate === "function") {
+            fieldRef.forceUpdate();
+          }
+        }
+      } else {
+        const fieldRef = get(errors, fieldName) && get(this.refs, fieldName);
+        if(typeof fieldRef?.forceUpdate === "function") {
+          fieldRef.forceUpdate();
+        }
       }
     });
     if(triggerCallback) {
@@ -143,9 +154,21 @@ export default class{
   // setValues sets the field value to the masked value for each fieldName path in the values object passed in. It also calls the changeCallback.
   setValues(values, triggerCallback = true) {
     this.fields.forEach((fieldName) => {
-      const value = get(values, fieldName);
-      if(typeof value !== "undefined") {
-        this.setValue(fieldName, value, false, true);
+      if (fieldName.includes("[0]")) {
+        const parts = fieldName.split("[0]");
+        const length = get(values, parts[0], []).length;
+        for(let i = 0; i < length; i++) {
+          const field = parts[0] + "[" + i + "]" + parts[1];
+          const value = get(values, field);
+          if(value !== undefined) {
+            this.setValue(field, value, false, true);
+          }
+        }
+      } else {
+        const value = get(values, fieldName);
+        if(value !== undefined) {
+          this.setValue(fieldName, value, false, true);
+        }
       }
     });
     if(triggerCallback) {
@@ -155,9 +178,21 @@ export default class{
 
   setValuesFromParsed(values) {
     this.fields.forEach((fieldName) => {
-      const value = get(values, fieldName);
-      if(typeof value !== "undefined") {
-        this.setValue(fieldName, this.convert(fieldName, value), false, true);
+      if (fieldName.includes("[0]")) {
+        const parts = fieldName.split("[0]");
+        const length = get(values, parts[0], []).length;
+        for(let i = 0; i < length; i++) {
+          const field = parts[0] + "[" + i + "]" + parts[1];
+          const value = get(values, field);
+          if (value !== undefined) {
+            this.setValue(field, this.convert(field, value), false, true);
+          }
+        }
+      } else {
+        const value = get(values, fieldName);
+        if(value !== undefined) {
+          this.setValue(fieldName, this.convert(fieldName, value), false, true);
+        }
       }
     });
   }
@@ -168,7 +203,7 @@ export default class{
 
   // format returns formatter results. If no formatter is defined for the schema key, then the formatter structure is returned assuming true.
   format(fieldName, value) {
-    const key = get(this.schema, fieldName);
+    const key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
     let response = {
       errors: [],
       formatted: value,
@@ -193,7 +228,7 @@ export default class{
 
   // mask masks data based on schema key. If no mask is defined for the schema key, then the original value is returned.
   mask(fieldName, value) {
-    const key = get(this.schema, fieldName);
+    const key = get(this.schema, fieldName.replace(/\[\d+\]/g, "[0]"));
     let response = value;
 
     if(!isNil(key)) {
@@ -213,11 +248,26 @@ export default class{
 
   isValid() {
     let flag = true;
+    const values = this.getValues();
     for(let i = 0; i < this.fields.length; i++) {
-      const{ valid } = this.format(this.fields[i], this.getValue(this.fields[i]));
-      if(valid === false) {
-        flag = false;
-        break;
+      if(this.fields[i].includes("[0]")) {
+        const parts = this.fields[i].split("[0]");
+        const length = get(values, parts[0], []).length();
+        for(let j = 0; j < length; j++) {
+          const field = parts[0] + "[" + j + "]" + parts[1];
+          const { valid } = this.format(field, get(values, field));
+          if (valid === false) {
+            flag = false;
+            break;
+          }
+        }
+        if(!flag) break;
+      } else {
+        const{ valid } = this.format(this.fields[i], this.getValue(this.fields[i]));
+        if(valid === false) {
+          flag = false;
+          break;
+        }
       }
     }
     return(flag);
@@ -242,9 +292,19 @@ export default class{
       triggerCallback = false;
     }
 
-    this.fields.forEach(field => {
-      const error = serverValidationErrors[field];
-      this.validate(field, false, error);
+    this.fields.forEach(fieldName => {
+      if(fieldName.includes("[0]")) {
+        const parts = fieldName.split("[0]");
+        const length = get(serverValidationErrors, parts[0], []).length;
+        for(let i = 0; i < length; i++) {
+          const field = parts[0] + "[" + i + "]" + parts[1];
+          const error = get(serverValidationErrors, field);
+          this.validate(field, false, error);
+        }
+      } else {
+        const error = get(serverValidationErrors, fieldName);
+        this.validate(fieldName, false, error);
+      }
     });
 
     if(triggerCallback) {
@@ -261,11 +321,24 @@ export default class{
     const differences = {};
     const data = this.parsedData;
 
-    this.fields.forEach((field) => {
-      if((isNil(get(original, field)) || get(original, field) === "") && (isNil(get(data, field)) || get(data, field) === "")) {
-        // do nothing
-      } else if(!isEqual(get(original, field), get(data, field))) {
-        set(differences, field, get(data, field));
+    this.fields.forEach((fieldName) => {
+      if(fieldName.includes("[0]")) {
+        const [p1, p2] = fieldName.split("[0]");
+        const length = get(original, p1, []).length;
+        for(let i = 0; i < length; i++) {
+          const path = p1 + "[" + i + "]" + p2;
+          if((isNil(get(original, path)) || get(original, path) === "") && (isNil(get(data, path)) || get(data, path) === "")) {
+            // do nothing
+          } else if(!isEqual(get(original, path), get(data, path))) {
+            set(differences, path, get(data, path));
+          }
+        }
+      } else {
+        if((isNil(get(original, fieldName)) || get(original, fieldName) === "") && (isNil(get(data, fieldName)) || get(data, fieldName) === "")) {
+          // do nothing
+        } else if(!isEqual(get(original, fieldName), get(data, fieldName))) {
+          set(differences, fieldName, get(data, fieldName));
+        }
       }
     });
     return(differences);
@@ -318,14 +391,32 @@ export default class{
     this.validateAll(errors);
 
     let fieldName, error, ref;
+    const values = this.getValues();
 
     for(const field of this.fields) {
-      error = this.getError(field);
-      if(!isEmpty(error)) {
-        ref = get(this.refs, field + ".inputRef.current");
-        if(!isNil(ref)) {
-          fieldName = field;
-          break;
+      if(field.includes("[0]")) {
+        const [p1, p2] = field.split("[0]");
+        const length = get(values, p1, []).length;
+        for(let i = 0; i < length; i++) {
+          const path = p1 + "[" + i + "]" + p2;
+          error = this.getError(path);
+          if(!isEmpty(error)) {
+            ref = get(this.refs, path + ".inputRef.current");
+            if(!isNil(ref)) {
+              fieldName = path;
+              break;
+            }
+          }
+        }
+        break;
+      } else {
+        error = this.getError(field);
+        if(!isEmpty(error)) {
+          ref = get(this.refs, field + ".inputRef.current");
+          if(!isNil(ref)) {
+            fieldName = field;
+            break;
+          }
         }
       }
     }
