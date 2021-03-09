@@ -1,4 +1,4 @@
-import { get, isEqual, isEmpty, isNil, set, unset } from "lodash";
+import { get, isEqual, isEmpty, isNil, set, toPath, unset } from "lodash";
 
 export default class{
   constructor(options = {}) {
@@ -19,7 +19,10 @@ export default class{
   // calcFields should be used only to instantiate the fields instance variable
   calcFields(schema = this.schema, prefix = "", fields = []) {
     Object.keys(schema).forEach((key) => {
-      if(typeof schema[key] === "object") {
+      if(Array.isArray[key]) {
+        fields.push(prefix + key);
+        this.calcFields(schema[key][0], prefix + key + "[0]", fields);
+      } else if(typeof schema[key] === "object") {
         this.calcFields(schema[key], prefix + key + ".", fields);
       } else {
         fields.push(prefix + key);
@@ -29,7 +32,9 @@ export default class{
   }
 
   convert(fieldName, value) {
-    const key = get(this.schema, fieldName);
+    let key = get(this.schema, fieldName.replace(/\[(\d+)\]/, "[0]"));
+
+    if(Array.isArray(key)) key = "array";
 
     if(!isNil(key)) {
       key.split(".").forEach((converter) => {
@@ -60,14 +65,16 @@ export default class{
   // and rerenders the component if it has registered an update function with the refs.
   setError(fieldName, errors, triggerCallback = true, rerender = true) {
     if(isEmpty(errors)) {
-      unset(this.errors, fieldName);
-      const nested = fieldName.indexOf(".") > -1;
+      const path = toPath(fieldName);
+      unset(this.errors, path);
+      path.pop();
+      const nested = path.length;
       if(nested) {
-        let currentPath = fieldName.slice(0, fieldName.lastIndexOf("."));
-        while(currentPath) {
-          if(isEmpty(get(this.errors, currentPath))) {
-            unset(this.errors, currentPath);
-            currentPath = currentPath.slice(0, currentPath.lastIndexOf("."));
+        while(path.length) {
+          const currentVal = get(this.errors, path);
+          if(isEmpty(currentVal) || (Array.isArray(currentVal) && isEmpty(currentVal.filter(Boolean)))) {
+            unset(this.errors, path);
+            path.pop();
           } else {
             break;
           }
